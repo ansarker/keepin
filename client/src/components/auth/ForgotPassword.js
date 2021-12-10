@@ -1,6 +1,6 @@
-import axios from 'axios';
 import React, { useState } from 'react';
-import { api } from '../config/config';
+import axios from 'axios';
+import { api } from '../../config/config';
 
 const Forgotpassword = () => {
   const [pending, setPending] = useState(false);

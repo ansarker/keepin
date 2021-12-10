@@ -12,4 +12,6 @@ router.put('/edit/:id', protect, passwordController.update_password)
 
 router.get('/details/:id', protect, passwordController.find_by_id)
 
+// Views
+
 module.exports = router;

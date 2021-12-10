@@ -1,7 +1,7 @@
-import axios from 'axios';
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useParams } from 'react-router';
-import { api } from '../config/config';
+import { api } from '../../config/config';
 
 const Resetpassword = () => {
   const [newPassword, setNewPassword] = useState('');

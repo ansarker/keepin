@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
-import { SearchContext } from '../context/SearchProvider';
-import { bars, close } from '../assets/icons/Icon';
+import { SearchContext } from '../../context/SearchProvider';
+import { bars, close } from '../../assets/icons/Icon';
 
 const Header = ({ open, handleSidebar }) => {
   const { setValue } = useContext(SearchContext);

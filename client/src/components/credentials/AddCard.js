@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { api } from '../config/config';
+import { api } from '../../config/config';
 
 const AddNew = ({ categories, setData, data, setShowModal }) => {
   const [pending, setPending] = useState(false);

@@ -1,56 +1,93 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import axios from 'axios';
+import useLocalStorage from './useLocalStorage';
 
 const useAuthentication = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [memory, setMemory] = useState({
-    token: null,
-    token_expiry: null
+  const [store, setStore] = useLocalStorage('auth', {
+    isAuthenticated: false,
+    access_token: null
+  })
+
+  const [auth, setAuth] = useState({
+    isAuthenticated: store.isAuthenticated,
+    access_token: store.access_token
   });
 
+  const [state, setState] = useState({
+    loading: false,
+    error: null
+  })
+
+  useEffect(() => {
+    localStorage.getItem('access_token') &&
+      setAuth({
+        isAuthenticated: store.isAuthenticated,
+        access_token: store.access_token
+      })
+
+    return setTimeout(() => {
+      setAuth(store)
+      localStorage.clear();
+    }, 1000 * 60 * 10)
+  }, [localStorage.getItem('access_token')])
+
   const signin = async ({ username, password }) => {
-    setLoading(true);
+    setState({
+      loading: true,
+      error: null
+    });
     try {
       const { data } = await axios.post('/auth/signin', { username, password }, {
         headers: { 'Content-Type': 'application/json' }
       });
-      setLoading(false);
-      localStorage.setItem('auth', JSON.stringify({
-        _id_token_: data.token,
-        _id_token_expiry_: Date.now() + (1000 * 60 * 5)
-      }));
-
-      inMemory();
-
+      setState({
+        loading: false,
+      });
+      // localStorage.setItem('access_token', JSON.stringify(data.token));
+      setStore(auth => ({
+        ...auth,
+        isAuthenticated: true,
+        access_token: data.token
+      }))
       navigate('/dashboard');
     } catch (error) {
-      setError(error.response.data.error);
+      setState({
+        loading: false,
+        error: error.response.data.error
+      });
       setTimeout(() => {
-        setError('');
+        setState({
+          error: ''
+        });
       }, 5000)
-    } finally {
-      setLoading(false);
     }
   }
 
   const signup = async (user) => {
-    setLoading(true);
+    setState({
+      loading: true,
+      error: null
+    });
     try {
       const { data } = await axios.post(`/auth/signup`, user, {
         headers: { 'Content-Type': 'application/json' }
       })
-      setLoading(false);
+      setState({
+        loading: false,
+      });
       navigate("/signin");
     } catch (error) {
-      setError(error.response.data.error);
+      setState({
+        loading: false,
+        error: error.response.data.error
+      });
       setTimeout(() => {
-        setError('');
+        setState({
+          error: ''
+        });
       }, 5000)
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -59,29 +96,12 @@ const useAuthentication = () => {
     navigate('/signin')
   }
 
-  const inMemory = () => {
-    let token = JSON.parse(localStorage.getItem('auth'));
-    if (token) {
-      setMemory({
-        token: token._id_token_,
-        token_expiry: token._id_token_expiry_
-      })
-    } else {
-      return null;
-    }
-  }
-
-  useEffect(() => {
-    inMemory();
-  }, [])
-
   return {
-    error,
-    loading,
+    state,
     signin,
     signup,
     signout,
-    memory
+    auth
   };
 }
 

@@ -135,7 +135,7 @@ exports.reset_password = async (req, res, next) => {
 }
 
 exports.user_profile = async (req, res, next) => {
-  const user = await User.findOne({})
+  const user = await User.findOne({}).select('-salt -hash')
   res.status(201).json({
     success: true,
     user,

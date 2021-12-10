@@ -1,12 +1,12 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router';
 import { FaTrash, FaEdit } from 'react-icons/fa'
 import { IoEye, IoEyeOff } from 'react-icons/io5';
-import { useParams } from 'react-router';
-import { api } from '../config/config';
-import { dateFormater } from "../assets/js/helpers";
-import Spinner from './Spinner';
-import Modal from './Modal';
+import { api } from '../../config/config';
+import { dateFormater } from "../../assets/js/helpers";
+import Spinner from '../libs/Spinner';
+import Modal from '../libs/Modal';
 import Edit from './Edit';
 
 const Details = () => {
@@ -15,6 +15,10 @@ const Details = () => {
   const [show, setShow] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [password, setPassword] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const handleModal = () => {
+    setShowModal(show => !show)
+  }
 
   const showPassword = (salt, watchword) => {
     axios.get(`${api}/auth/decrypt`, {
@@ -30,14 +34,10 @@ const Details = () => {
       })
   }
 
-  const [showModal, setShowModal] = useState(false);
-  const handleModal = () => {
-    setShowModal(show => !show)
-  }
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const {data} = await axios.get(`${api}/passwords/details/${detailId}`, {
+      const { data } = await axios.get(`${api}/passwords/details/${detailId}`, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('__id_token__')}`

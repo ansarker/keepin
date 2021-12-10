@@ -1,24 +1,13 @@
 const Password = require('../models/model.password');
 const { encrypt } = require('../helpers/helper');
 const { ObjectId } = require('bson');
-const ErrorResponse = require('../lib/errorResponse');
 
-exports.post_password = async (req, res, next) => {
-  console.log(req.body);
-  const { title, email, username, url, password } = req.body;
-  if (!title) {
-    return next(new ErrorResponse('Title can\'t be empty', 400))
-  }
-  if (!username) {
-    return next(new ErrorResponse('Username can\'t be empty', 400))
-  }
-  if (!password) {
-    return next(new ErrorResponse('Password can\'t be empty', 400))
-  }
+exports.post_password = async (req, res) => {
+  const { category, title, email, username, password } = req.body;
   const encPass = encrypt(password);
   const { iv: salt, encryptedData: watchword } = encPass;
   const passwordManager = new Password({
-    userId: req.user.email, title, email, username, url, salt, watchword
+    userId: req.user.email, category, title, email, username, salt, watchword
   })
   let result = await passwordManager.save();
 
@@ -82,7 +71,7 @@ exports.delete_password = (req, res) => {
 
 exports.update_password = (req, res) => {
   const updateId = { _id: ObjectId(req.params.id) }
-  const { title, email, username, url, password } = req.body;
+  const { category, title, email, username, password } = req.body;
   if (password === undefined) {
     Password.updateOne(updateId, {
       $set: req.body
@@ -98,7 +87,7 @@ exports.update_password = (req, res) => {
     const { iv: salt, encryptedData: watchword } = encPass;
 
     Password.updateOne(updateId, {
-      $set: { title, email, username, url, salt, watchword }
+      $set: { category, title, email, username, salt, watchword }
     }).then((response) => {
       res.status(201).json({
         success: true,

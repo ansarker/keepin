@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaFacebookSquare, FaGoogle } from 'react-icons/fa';
-import useAuth from '../hooks/useAuthentication';
+import useAuth from '../../hooks/useAuthentication';
 
 const Signin = () => {
-  const { loading, signin, error } = useAuth();
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { state, signin } = useAuth();
 
   const onSignin = () => {
-    signin({ username, password })
+    signin({ username, password });
   }
 
   return (
     <div className="bg-gray-900 min-h-screen flex items-center justify-center">
-      <div className="w-full lg:w-1/3 md:w-1/2 md:rounded-lg md:bg-white p-6 md:p-12">
-        {error &&
+      <div className="w-full lg:w-1/3 md:w-1/2 md:rounded-lg md:bg-white p-6 md:p-12" style={{width: "480px"}}>
+        {state.error &&
           <div className={`absolute top-0 left-0 right-0 text-center bg-red-100 py-1`}>
-            <p className="text-xs text-red-700">{error}</p>
+            <p className="text-xs text-red-700">{state.error}</p>
           </div>
         }
         <div className="mb-6">
@@ -34,8 +33,8 @@ const Signin = () => {
             <input onChange={(e) => setPassword(e.target.value)} type="password" placeholder="********" className="w-full px-3 py-2 rounded border outline-none text-gray-700" />
           </div>
           <div className="mb-4">
-            <button onClick={onSignin} type="button" disabled={loading} className="bg-green-500 hover:bg-green-700 text-white tracking-wider w-full p-3 rounded-md shadow-md font-bold">
-              {loading ? `Signing in...` : 'Signin'}
+            <button onClick={onSignin} type="button" disabled={state.loading} className="bg-green-500 hover:bg-green-700 text-white tracking-wider w-full p-3 rounded-md shadow-md font-bold">
+              {state.loading ? `Signing in...` : 'Signin'}
             </button>
           </div>
         </div>

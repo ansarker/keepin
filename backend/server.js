@@ -29,6 +29,7 @@ app.use((req, res, next) => {
  */
 const userRoutes = require('./routes/auth/routes.user');
 const passwordRoutes = require('./routes/routes.password');
+const cardRoutes = require('./routes/routes.card');
 
 app.get('/', (req, res) => {
   res.status(200).send("<a href='/auth/signin'>Signin</a><br/><a href='/auth/signup'>Signup</a>")
@@ -36,6 +37,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth', userRoutes);
 app.use('/passwords', passwordRoutes);
+app.use('/cards', cardRoutes);
 app.use(errorHandler);
 
 /**

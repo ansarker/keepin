@@ -5,7 +5,7 @@ import { IoMail } from 'react-icons/io5';
 
 const Datacard = ({ data, remove }) => {
   return (
-    <div className="w-full bg-white rounded-lg sahdow-lg p-3 md:p-6 justify-center items-center">
+    <div className="items-center justify-center w-full bg-white rounded-lg shadow p-4 md:p-6">
       <div className="text-left">
         <div className="flex items-center justify-between">
           <div className="block">
@@ -20,8 +20,7 @@ const Datacard = ({ data, remove }) => {
             </button>
           </div>
         </div>
-        <p className="text-left text-sm text-gray-500 font-normal flex items-center mb-2"><IoMail className="mr-1" /> {data.email}</p>
-        <span className="text-xs text-white py-1 px-2 bg-gray-700 rounded-xl font-bold tracking-wider">{data.category ? data.category : 'Unknown'}</span>
+        <p className="text-left text-sm text-gray-500 font-normal flex items-center mb-2"><IoMail className="mr-1" /> {data?.email}</p>
       </div>
     </div>
   );

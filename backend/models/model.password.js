@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 
 const passwordSchema = mongoose.Schema({
   userId: String,
-  category: String,
-  title: String,
+  title: {
+    type: String,
+    require: true
+  },
   email: String,
   username: String,
+  url: String,
   salt: String,
   watchword: String,
 }, {

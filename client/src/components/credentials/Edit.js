@@ -1,7 +1,7 @@
-import axios from 'axios';
 import React, { useState } from 'react';
-import { api } from '../config/config';
-import categories from '../data/categories.json';
+import axios from 'axios';
+import { api } from '../../config/config';
+import categories from '../../data/categories.json';
 
 const Edit = ({ data, setIsUpdated, setShowModal }) => {
   const [updateData, setUpdateData] = useState(data);
