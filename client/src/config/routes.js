@@ -11,6 +11,7 @@ import PasswordListing from '../components/credentials/PasswordListing';
 import CardListing from '../components/credentials/CardListing';
 import IdentityListing from '../components/credentials/IdentityListing';
 import Favorites from '../components/credentials/Favorites';
+import Details from "../components/credentials/Details";
 
 export default [
   {
@@ -63,6 +64,10 @@ export default [
       {
         path: 'profile',
         element: <Profile />
+      },
+      {
+        path: 'details/:detailId',
+        element: <Details />
       }
     ]
   }

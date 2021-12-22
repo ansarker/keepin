@@ -4,7 +4,6 @@ const { ObjectId } = require('bson');
 const ErrorResponse = require('../lib/errorResponse');
 
 exports.post_password = async (req, res, next) => {
-  console.log(req.body);
   const { title, email, username, url, password } = req.body;
   if (!title) {
     return next(new ErrorResponse('Title can\'t be empty', 400))

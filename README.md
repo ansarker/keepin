@@ -47,6 +47,6 @@ __APIs__
 - Install dependencies/node_modules
   - `npm install` or `yarn`
 - To start server 
-  - `npm server` or `yarn server`
+  - `npm run server` or `yarn server`
 - To start reactjs 
   - `npm start` or `yarn start`

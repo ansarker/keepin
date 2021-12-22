@@ -1,5 +1,5 @@
-import React from 'react';
-import Sidebar from './Sidebar';
+import React from "react";
+import Sidebar from "./Sidebar";
 
 const Wrapper = ({ children }) => {
   return (
@@ -10,6 +10,6 @@ const Wrapper = ({ children }) => {
       </div>
     </div>
   );
-}
+};
 
 export default Wrapper;

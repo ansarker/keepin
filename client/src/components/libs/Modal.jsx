@@ -22,7 +22,7 @@ const Modal = ({ showModal, setShowModal, heading, children }) => {
                 <FaTimes className="text-xl" />
               </button>
             </div>
-            <div className="p-2">
+            <div className="p-4">
               {children}
             </div>
           </div>

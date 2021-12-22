@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import useAuth from '../../hooks/useAuth';
+import Modal from '../libs/Modal';
 
-const AddPassword = ({ passwordListing, setPasswordListing, setShowModal }) => {
-  const { auth } = useAuth();
+const AddPassword = ({ passwordListing, setPasswordListing, showModal, setShowModal }) => {
   const [state, setState] = useState({ loading: false, error: '' });
   const [accountInfo, setAccountInfo] = useState({
     title: '',
@@ -31,12 +30,11 @@ const AddPassword = ({ passwordListing, setPasswordListing, setShowModal }) => {
         }
       })
         .then((response) => {
-          setPasswordListing(response.data)
-          setState({ loading: false, error: '' });
+          setPasswordListing([...passwordListing, response.data.result])
           setShowModal(false)
+          setState({ loading: false });
         })
         .catch((error) => {
-          console.log(error.response);
           setPasswordListing([...passwordListing])
           // need to solve this khankir chele...
           error.response && setState({ loading: false, error: error.response.data.error })
@@ -49,7 +47,7 @@ const AddPassword = ({ passwordListing, setPasswordListing, setShowModal }) => {
   }
 
   return (
-    <div>
+    <Modal showModal={showModal} setShowModal={setShowModal} heading={"Add Password"}>
       <div className="w-full box-border mb-6">
         <label className="block uppercase tracking-wider text-gray-700 text-sm font-bold mb-2" htmlFor="title">Title</label>
         <input name="title" onChange={onAccountInfoChange} className="appearance-none block w-full bg-gray-200 text-gray-700 border focus:border-gray-700 rounded py-3 px-4 focus:outline-none focus:bg-white" type="text" placeholder="ex. Github" />
@@ -70,17 +68,17 @@ const AddPassword = ({ passwordListing, setPasswordListing, setShowModal }) => {
         <label className="block uppercase tracking-wider text-gray-700 text-sm font-bold mb-2" htmlFor="url">Url</label>
         <input name="url" onChange={onAccountInfoChange} className="appearance-none block w-full bg-gray-200 text-gray-700 border focus:border-gray-700 rounded py-3 px-4 focus:outline-none focus:bg-white" type="text" placeholder="ex. www.github.com" />
       </div>
-      <div className="w-full flex items-center justify-end box-border mb-6">
-        <button disabled={state.loading} onClick={submitAccountInfo} className="py-3 px-5 bg-gradient-to-b from-gray-600 to-gray-700 text-white text-lg font-bold tracking-wider rounded-2xl shadow-xl">
+      <div className="w-full flex items-center justify-end box-border">
+        <button disabled={state.loading} onClick={submitAccountInfo} className="w-full py-2 bg-gradient-to-b from-gray-600 to-gray-700 text-white text-lg font-bold tracking-wider rounded-xl shadow-xl">
           {state.loading ? 'Saving...' : 'Save'}
         </button>
       </div>
       {state.error &&
-        <div className="w-full flex items-center">
-          <span className="bg-red-100 text-red-600 p-1 text-sm">There was an error: {state.error}</span>
+        <div className="w-full flex items-center mt-4">
+          <span className="bg-red-100 text-red-600 py-1 px-3 text-sm">{state.error}</span>
         </div>
       }
-    </div>
+    </Modal>
   );
 }
 

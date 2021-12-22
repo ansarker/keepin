@@ -6,16 +6,16 @@ import { IoEye, IoEyeOff } from 'react-icons/io5';
 import { api } from '../../config/config';
 import { dateFormater } from "../../assets/js/helpers";
 import Spinner from '../libs/Spinner';
-import Modal from '../libs/Modal';
 import Edit from './Edit';
 
 const Details = () => {
-  const { detailId } = useParams()
+  const { detailId } = useParams();
   const [details, setDetails] = useState(null);
   const [show, setShow] = useState(false);
   const [isUpdated, setIsUpdated] = useState(false);
   const [password, setPassword] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
   const handleModal = () => {
     setShowModal(show => !show)
   }
@@ -25,7 +25,7 @@ const Details = () => {
       params: { salt, watchword },
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        'Authorization': `Bearer ${auth.access_token}`
       }
     })
       .then((res) => {
@@ -40,7 +40,7 @@ const Details = () => {
       const { data } = await axios.get(`${api}/passwords/details/${detailId}`, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('__id_token__')}`
+          'Authorization': `Bearer ${auth.access_token}`
         }
       });
       setDetails(data.data)
@@ -93,14 +93,6 @@ const Details = () => {
                 </button>
               </td>
             </tr>
-            <tr>
-              <td>
-                <p className="text-black leading-7 text-sm font-normal text-right">Category</p>
-              </td>
-              <td>
-                <p className="ml-3 text-sm leading-7 font-bold text-black">{details.category}</p>
-              </td>
-            </tr>
           </tbody>
         </table>
         <hr className="my-5" />
@@ -131,17 +123,13 @@ const Details = () => {
                 <p className="text-black leading-7 text-sm font-normal text-right">URL</p>
               </td>
               <td>
-                <p className="ml-3 text-sm leading-7 font-normal text-black">
-                  <a href="" target="_blank">https://www.facebook.com</a>
-                </p>
+                <p className="ml-3 text-sm leading-7 font-normal text-black">{details.url}</p>
               </td>
             </tr>
           </tbody>
         </table>
-
-        <Modal showModal={showModal} setShowModal={setShowModal}>
-          <Edit setIsUpdated={setIsUpdated} data={details} setShowModal={setShowModal} />
-        </Modal>
+        
+        <Edit setIsUpdated={setIsUpdated} data={details} showModal={showModal} setShowModal={setShowModal} />
       </div>
     </div>
 
