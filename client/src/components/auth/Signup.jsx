@@ -1,4 +1,6 @@
 import React, { useContext, useState } from "react";
+import { FaCircleNotch } from "react-icons/fa";
+import { IoEye, IoEyeOff } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 
@@ -7,6 +9,7 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [viewPassword, setViewPassword] = useState(false);
 
   const onSignup = () => {
     const user = { username, email, password };
@@ -59,19 +62,35 @@ const Signup = () => {
             <label className="font-semibold hidden md:block text-base mb-2 text-white md:text-gray-700">
               Password
             </label>
-            <input
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              placeholder="********"
-              className="w-full bg-white px-3 py-2 rounded border outline-none text-gray-700"
-            />
+            <div className="relative">
+              <input
+                onChange={(e) => setPassword(e.target.value)}
+                type={viewPassword ? "text" : "password"}
+                placeholder="********"
+                className="w-full bg-white px-3 py-2 rounded border outline-none text-gray-700"
+              />
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
+                <button
+                  className="text-gray-600 text-xl"
+                  onClick={() => setViewPassword((view) => !view)}
+                >
+                  {viewPassword ? <IoEyeOff /> : <IoEye />}
+                </button>
+              </div>
+            </div>
           </div>
           <div className="mb-4">
             <button
               onClick={onSignup}
               className="bg-green-500 hover:bg-green-700 text-white tracking-wider w-full p-3 rounded-md shadow-md font-bold"
             >
-              {state.loading ? "Signing up..." : "Signup"}
+              {state.loading ? (
+                <span className="flex items-center justify-center">
+                  <FaCircleNotch className="animate-spin mr-2" /> Signing up...
+                </span>
+              ) : (
+                <span>Signup</span>
+              )}
             </button>
           </div>
         </div>

@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoApps } from "react-icons/io5";
-import { FaSignOutAlt, FaCreditCard, FaIdCard } from "react-icons/fa";
-import { MdPassword, MdStar } from "react-icons/md";
+import { FaSignOutAlt, FaCreditCard } from "react-icons/fa";
+import { MdPassword } from "react-icons/md";
+import { IoHeart } from "react-icons/io5";
 import Header from "./Header";
 import AuthContext from "../../context/AuthContext";
 
@@ -16,7 +17,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="fixed left-0 right-0 top-0 z-50">
+    <div className="fixed lg:fixed left-0 lg:left-60 lg:right-60 right-0 top-0 z-50">
       <Header open={open} handleSidebar={handleSidebar} />
       <div
         className={`bg-white ${
@@ -35,7 +36,7 @@ const Sidebar = () => {
               to="/favorites"
               className="flex w-full items-center text-sm font-semibold text-black hover:bg-blue-50 hover:text-blue-600 px-4 py-2 rounded-full"
             >
-              <MdStar className="mr-2" /> <span>Favorites</span>
+              <IoHeart className="mr-2" /> <span>Favorites</span>
             </Link>
           </div>
           <div className="my-3">
@@ -52,12 +53,6 @@ const Sidebar = () => {
                 className="flex w-full items-center text-sm font-semibold text-black hover:bg-blue-50 hover:text-blue-600 px-4 py-2 rounded-full"
               >
                 <FaCreditCard className="mr-2" /> <span>Card</span>
-              </Link>
-              <Link
-                to="/identities"
-                className="flex w-full items-center text-sm font-semibold text-black hover:bg-blue-50 hover:text-blue-600 px-4 py-2 rounded-full"
-              >
-                <FaIdCard className="mr-2" /> <span>Identity</span>
               </Link>
             </div>
           </div>

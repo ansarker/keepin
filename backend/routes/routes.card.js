@@ -12,6 +12,8 @@ router.put('/edit/:id', protect, cardController.update_card)
 
 router.get('/details/:id', protect, cardController.find_by_id)
 
+router.get('/decrypt', protect, cardController.show_pincode)
+
 // Views
 
 module.exports = router;

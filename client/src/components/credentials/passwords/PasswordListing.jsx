@@ -1,24 +1,26 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { GrAdd } from "react-icons/gr";
-import Loading from "../libs/Loading";
-import NoData from "../libs/NoData";
+import Loading from "../../libs/Loading";
+import NoData from "../../libs/NoData";
 import DataListing from "./DataListing";
 import AddPassword from "./AddPassword";
-import AuthContext from "../../context/AuthContext";
+import AuthContext from "../../../context/AuthContext";
 
 const PasswordListing = () => {
   const { authTokens } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
   const [passwordListing, setPasswordListing] = useState([]);
-  const [state, setState] = useState({ loading: false, error: "" });
+  const [state, setState] = useState({ loading: false, message: "" });
   const [deleted, setDeleted] = useState(false);
 
-  console.log(authTokens);
+  const handleModal = () => {
+    setShowModal((show) => !show);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
-      setState({ loading: true });
+      setState({ loading: true, message: "" });
       try {
         const response = await axios.get("/passwords/read", {
           headers: {
@@ -27,15 +29,11 @@ const PasswordListing = () => {
           },
         });
         setPasswordListing(response.data.data);
-        setState({
-          loading: false,
-          error: null,
-        });
+        setState({ loading: false, message: "" });
       } catch (error) {
-        console.log("ERR ", error);
-        setState({ error: error.response.data.error });
+        setState({ message: error.response.data.error });
         setTimeout(() => {
-          setState({ error: "" });
+          setState({ message: "" });
         }, 5000);
       }
     };
@@ -43,15 +41,11 @@ const PasswordListing = () => {
     fetchData();
 
     return () => {
-      setState({ loading: true, error: null });
+      setState({ loading: true, message: null });
       setPasswordListing({});
       setDeleted(false);
     };
   }, [authTokens, setPasswordListing, deleted]);
-
-  const handleModal = () => {
-    setShowModal((show) => !show);
-  };
 
   const remove = (data) => {
     axios
@@ -84,11 +78,11 @@ const PasswordListing = () => {
       <h1 className="text-lg md:text-2xl font-black text-gray-700 mb-3">
         Saved Passwords
       </h1>
-      {state.loading && <Loading />}
-      {state.error && (
+      {state.loading && <Loading message={"Fetching data..."} />}
+      {state.message && (
         <div>
           <h1>Error while fetching data...</h1>
-          <p>{state.error}</p>
+          <p>{state.message}</p>
         </div>
       )}
       {passwordListing.length > 0 ? (
