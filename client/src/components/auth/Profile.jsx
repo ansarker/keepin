@@ -1,16 +1,25 @@
-import React, { useContext, useEffect, useState } from "react";
-import Spinner from "../libs/Spinner";
+import axios from "axios";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import EditProfile from "./EditProfile";
 import ChangePassword from "./ChangePassword";
 import AuthContext from "../../context/AuthContext";
-import axios from "axios";
 import Loading from "../libs/Loading";
+import { dateFormater } from "../../assets/js/helpers";
+import { FaCamera } from "react-icons/fa";
+import UploadPhoto from "./UploadPhoto";
 
 const Profile = () => {
   const { authTokens } = useContext(AuthContext);
   const [state, setState] = useState({ loading: false, message: "" });
   const [userProfile, setUserProfile] = useState(null);
+  const [updated, setUpdated] = useState(false);
   const [tab, setTab] = useState("profile");
+  const [showModal, setShowModal] = useState(false);
+
+  const handleModal = () => {
+    setShowModal((show) => !show);
+  };
+
   const onTabChange = (event) => {
     setTab(event.target.name);
   };
@@ -44,25 +53,44 @@ const Profile = () => {
       }
     };
     fetchUserProfile();
-  }, [authTokens]);
+  }, [authTokens, updated]);
 
   return (
     <div>
       <div className="relative">
-        <div className="w-full h-32 rounded-xl bg-gradient-to-b from-gray-900 to-gray-600"></div>
+        <div
+          className="w-full h-32 rounded-xl"
+          style={{ background: "#202124" }}
+        ></div>
         <div className="relative -top-16 left-1/2 transform -translate-x-1/2">
-          {!authTokens ? (
-            <div className="border-4 border-gray-300 w-32 h-32 shadow flex items-center justify-center rounded-md p-4 mx-auto bg-gradient-to-b from-gray-900 to-gray-600">
+          {state.loading ? (
+            <div
+              className="w-40 h-40 rounded-full border-4 hadow flex items-center justify-center p-4 mx-auto bg-gradient-to-b from-gray-900 to-gray-600"
+              style={{ borderColor: "#202124" }}
+            >
               <div className="animate-pulse flex space-x-4">
                 <div className="rounded-full bg-gray-400 h-12 w-12"></div>
               </div>
             </div>
           ) : (
-            <img
-              src="https://i.pravatar.cc/300"
-              alt="Profile Picture"
-              className="w-32 h-32 rounded-md border-4 mx-auto border-gray-300"
-            />
+            <div className="w-40 h-40 mx-auto relative">
+              <img
+                src={
+                  userProfile?.photo
+                    ? userProfile.photo
+                    : "https://e1.pngegg.com/pngimages/472/175/png-clipart-gray-icons-person-thumbnail.png"
+                }
+                alt="Profile Picture"
+                className="w-40 h-40 rounded-full border-4 mx-auto"
+                style={{ borderColor: "#202124" }}
+              />
+              <button
+                onClick={handleModal}
+                className="absolute right-3 bottom-1 rounded-full p-2 bg-white opacity-70 hover:opacity-100 text-gray-600 hover:text-gray-900"
+              >
+                <FaCamera />
+              </button>
+            </div>
           )}
         </div>
         <div className="relative bottom-3">
@@ -71,7 +99,7 @@ const Profile = () => {
               <button
                 onClick={onTabChange}
                 name="profile"
-                className={`font-bold text-black text-sm p-2 bg-gray-300 hover:bg-gray-200 ${
+                className={`font-bold text-black text-sm p-2 bg-gray-300 hover:bg-gray-200 rounded-md ${
                   tab === "profile" ? "border-b-4 border-purple-600" : ""
                 }`}
               >
@@ -82,7 +110,7 @@ const Profile = () => {
               <button
                 onClick={onTabChange}
                 name="edit_profile"
-                className={`font-bold text-black text-sm p-2 bg-gray-300 hover:bg-gray-200 ${
+                className={`font-bold text-black text-sm p-2 bg-gray-300 hover:bg-gray-200 rounded-md ${
                   tab === "edit_profile" ? "border-b-4 border-purple-600" : ""
                 }`}
               >
@@ -93,7 +121,7 @@ const Profile = () => {
               <button
                 onClick={onTabChange}
                 name="change_password"
-                className={`font-bold text-black text-sm p-2 bg-gray-300 hover:bg-gray-200 ${
+                className={`font-bold text-black text-sm p-2 bg-gray-300 hover:bg-gray-200 rounded-md ${
                   tab === "change_password"
                     ? "border-b-4 border-purple-600"
                     : ""
@@ -115,41 +143,66 @@ const Profile = () => {
             </h1>
             <div className="py-8">
               <h2 className="mb-3 text-gray-600 text-xl font-bold">Profile</h2>
-              <table className="w-full">
-                <tbody>
-                  <tr className="bg-white">
-                    <td className="text-base border-b p-2 leading-7 font-bold text-gray-800 text-left">
-                      Name
-                    </td>
-                    <td className="text-base border-b p-2 leading-7 font-medium text-gray-600 text-right md:text-left">
-                      {userProfile.firstName + " " + userProfile.lastName}
-                    </td>
-                  </tr>
-                  <tr className="bg-white">
-                    <td className="text-base border-b p-2 leading-7 font-bold text-gray-800 text-left">
-                      Username
-                    </td>
-                    <td className="text-base border-b p-2 leading-7 font-medium text-gray-600 text-right md:text-left">
-                      {userProfile.username}
-                    </td>
-                  </tr>
-                  <tr className="bg-white">
-                    <td className="text-base p-2 leading-7 font-bold text-gray-800 text-left">
-                      Email
-                    </td>
-                    <td className="text-base p-2 leading-7 font-medium text-gray-600 text-right md:text-left">
-                      {userProfile.email}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="bg-white shadow rounded-md">
+                <div className="p-4 border-b">
+                  <p className="text-sm tracking-wide font-semibold text-gray-800">
+                    Name
+                  </p>
+                  <p className="text-base leading-7 font-medium text-gray-600">
+                    {userProfile.firstName
+                      ? userProfile.firstName
+                      : "Firstname"}{" "}
+                    {userProfile.lastName ? userProfile.lastName : "Lastname"}
+                  </p>
+                </div>
+                <div className="p-4 border-b">
+                  <p className="text-sm tracking-wide font-semibold text-gray-800">
+                    Username
+                  </p>
+                  <p className="text-base leading-7 font-medium text-gray-600">
+                    {userProfile.username}
+                  </p>
+                </div>
+                <div className="p-4 border-b">
+                  <p className="text-sm tracking-wide font-semibold text-gray-800">
+                    Email
+                  </p>
+                  <p className="text-base leading-7 font-medium text-gray-600">
+                    {userProfile.email}
+                  </p>
+                </div>
+                <div className="p-4 border-b">
+                  <p className="text-sm tracking-wide font-semibold text-gray-800">
+                    Last updated on
+                  </p>
+                  <p className="text-base leading-7 font-medium text-gray-600">
+                    {dateFormater(userProfile.updatedAt)}
+                  </p>
+                </div>
+                <div className="p-4 border-b">
+                  <p className="text-sm tracking-wide font-semibold text-gray-800">
+                    Created on
+                  </p>
+                  <p className="text-base leading-7 font-medium text-gray-600">
+                    {dateFormater(userProfile.createdAt)}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         ) : null)}
 
-      {tab === "edit_profile" && <EditProfile user={userProfile} />}
+      {tab === "edit_profile" && (
+        <EditProfile user={userProfile} setUpdated={setUpdated} />
+      )}
 
-      {tab === "change_password" && <ChangePassword />}
+      {tab === "change_password" && <ChangePassword user={userProfile} />}
+      <UploadPhoto
+        id={userProfile?._id}
+        setUpdated={setUpdated}
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
     </div>
   );
 };

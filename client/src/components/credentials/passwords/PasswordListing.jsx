@@ -6,9 +6,11 @@ import NoData from "../../libs/NoData";
 import DataListing from "./DataListing";
 import AddPassword from "./AddPassword";
 import AuthContext from "../../../context/AuthContext";
+import { SearchContext } from "../../../context/SearchProvider";
 
 const PasswordListing = () => {
   const { authTokens } = useContext(AuthContext);
+  const { value } = useContext(SearchContext);
   const [showModal, setShowModal] = useState(false);
   const [passwordListing, setPasswordListing] = useState([]);
   const [state, setState] = useState({ loading: false, message: "" });
@@ -23,6 +25,9 @@ const PasswordListing = () => {
       setState({ loading: true, message: "" });
       try {
         const response = await axios.get("/passwords/read", {
+          params: {
+            q: value,
+          },
           headers: {
             "Content-type": "application/json",
             Authorization: `Bearer ${authTokens.access_token}`,
@@ -45,7 +50,7 @@ const PasswordListing = () => {
       setPasswordListing({});
       setDeleted(false);
     };
-  }, [authTokens, setPasswordListing, deleted]);
+  }, [authTokens, value, setPasswordListing, deleted]);
 
   const remove = (data) => {
     axios
@@ -88,7 +93,10 @@ const PasswordListing = () => {
       {passwordListing.length > 0 ? (
         <DataListing data={passwordListing} remove={remove} />
       ) : (
-        <NoData />
+        <NoData
+          heading="Empty List"
+          message="You haven't kept any passwords yet."
+        />
       )}
       <AddPassword
         passwordListing={passwordListing}

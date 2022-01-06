@@ -16,21 +16,9 @@ const UserSchema = mongoose.Schema(
     },
     salt: String,
     hash: String,
-    admin: Boolean,
     resetPasswordToken: String,
     resetPasswordExpire: Date,
-    categories: [
-      {
-        label: {
-          type: String,
-          default: "Unknwon",
-        },
-        value: {
-          type: String,
-          default: "unknown",
-        },
-      },
-    ],
+    photo: String,
   },
   {
     timestamps: true,

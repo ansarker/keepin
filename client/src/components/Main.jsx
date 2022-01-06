@@ -4,7 +4,10 @@ import { AuthProvider } from "../context/AuthContext";
 import Profile from "./auth/Profile";
 import Signin from "./auth/Signin";
 import Signup from "./auth/Signup";
+import ForgotPassword from "./auth/ForgotPassword";
+import ResetPassword from "./auth/ResetPassword";
 import Dashboard from "./credentials/Dashboard";
+import Favorites from "./credentials/Favorites";
 import NotFound from "./libs/NotFound";
 import Wrapper from "./libs/Wrapper";
 import PrivateRoute from "./routing/PrivateRoute";
@@ -20,15 +23,11 @@ const Main = () => {
         <Routes>
           <Route path="/" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
-          {/* <Route
-          exact
-          path="/"
-          element={
-            <Wrapper>
-              <PrivateRoute />
-            </Wrapper>
-          }
-        > */}
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route
+            path="/resetpassword/:resetToken"
+            element={<ResetPassword />}
+          />
           <Route
             exact
             path="/dashboard"
@@ -90,7 +89,16 @@ const Main = () => {
               </PrivateRoute>
             }
           />
-          {/* </Route> */}
+          <Route
+            path="/favorites"
+            element={
+              <PrivateRoute>
+                <Wrapper>
+                  <Favorites />
+                </Wrapper>
+              </PrivateRoute>
+            }
+          />
           <Route path="/*" element={<NotFound />} />
         </Routes>
       </AuthProvider>

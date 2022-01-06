@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoApps } from "react-icons/io5";
 import { FaSignOutAlt, FaCreditCard } from "react-icons/fa";
@@ -8,9 +9,30 @@ import Header from "./Header";
 import AuthContext from "../../context/AuthContext";
 
 const Sidebar = () => {
-  const { signOut, user } = useContext(AuthContext);
+  const { signOut, user, authTokens } = useContext(AuthContext);
   const { username } = user;
+  const [userProfile, setUserProfile] = useState(null);
   const [open, setOpen] = useState(true);
+
+  useEffect(() => {
+    let fetchUserProfile = async () => {
+      try {
+        let { access_token } = authTokens;
+        let response = await axios.get("/auth/user-profile", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access_token}`,
+          },
+        });
+        if (response.status === 200) {
+          let { data } = response;
+          setUserProfile(data.user);
+        } else {
+        }
+      } catch (error) {}
+    };
+    fetchUserProfile();
+  }, [authTokens]);
 
   const handleSidebar = () => {
     setOpen(!open);
@@ -61,7 +83,11 @@ const Sidebar = () => {
           <Link to="/profile" className="flex items-center">
             <div className="rounded-full shadow-md w-12 h-12 border-2 border-gray-900 mr-2">
               <img
-                src="https://i.pravatar.cc/300"
+                src={
+                  userProfile?.photo
+                    ? userProfile.photo
+                    : "https://e1.pngegg.com/pngimages/472/175/png-clipart-gray-icons-person-thumbnail.png"
+                }
                 alt="Profile Picture"
                 className="w-full h-full rounded-full"
               />

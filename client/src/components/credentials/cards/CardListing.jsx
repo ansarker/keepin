@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { GrAdd } from "react-icons/gr";
 import AuthContext from "../../../context/AuthContext";
+import { SearchContext } from "../../../context/SearchProvider";
 import Loading from "../../libs/Loading";
 import NoData from "../../libs/NoData";
 import AddCard from "./AddCard";
@@ -9,6 +10,7 @@ import Datalisting from "./DataListing";
 
 const CardListing = () => {
   const { authTokens } = useContext(AuthContext);
+  const { value } = useContext(SearchContext);
   const [showModal, setShowModal] = useState(false);
   const [cardListing, setCardListing] = useState([]);
   const [state, setState] = useState({ loading: false, message: "" });
@@ -23,6 +25,9 @@ const CardListing = () => {
       setState({ loading: true, message: "" });
       try {
         const response = await axios.get("/cards/read", {
+          params: {
+            q: value,
+          },
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authTokens.access_token}`,
@@ -46,7 +51,7 @@ const CardListing = () => {
       setCardListing({});
       setDeleted(false);
     };
-  }, [authTokens, setCardListing, deleted]);
+  }, [authTokens, value, setCardListing, deleted]);
 
   const remove = (data) => {
     axios
@@ -87,7 +92,7 @@ const CardListing = () => {
       {cardListing.length > 0 ? (
         <Datalisting data={cardListing} remove={remove} />
       ) : (
-        <NoData />
+        <NoData heading="Empty List" message="You haven't kept any cards yet" />
       )}
       <AddCard
         cardListing={cardListing}

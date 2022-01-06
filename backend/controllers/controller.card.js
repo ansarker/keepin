@@ -59,14 +59,14 @@ exports.post_card = async (req, res, next) => {
 exports.get_card = (req, res) => {
   if (req.query.q) {
     const searchValue = new RegExp(req.query.q, "i");
-    Card.find({
-      userId: req.user.email,
-      $or: [
-        { title: searchValue },
-        { email: searchValue },
-        { username: searchValue },
-      ],
-    })
+    Card.find({ userId: req.user.email })
+      .where({
+        $or: [
+          { title: searchValue },
+          { cardholder: searchValue },
+          { brand: searchValue },
+        ],
+      })
       .then((data) => {
         res.status(201).json({
           success: true,
@@ -97,6 +97,30 @@ exports.get_card = (req, res) => {
   }
 };
 
+exports.favorites = (req, res) => {
+  let data__ = [];
+
+  Card.find({ userId: req.user.email })
+    .then((data) => {
+      data.filter((item) => {
+        if (item.favorite === true) {
+          data__.push(item);
+        }
+      });
+      res.status(201).json({
+        success: true,
+        data: data__,
+        msg: "Showing all the data",
+      });
+    })
+    .catch((err) => {
+      res.status(401).json({
+        success: false,
+        msg: "No data available :(",
+      });
+    });
+};
+
 exports.delete_card = (req, res) => {
   const { _id } = req.body;
   const deleteId = { _id: ObjectId(_id) };
@@ -111,7 +135,6 @@ exports.delete_card = (req, res) => {
 };
 
 exports.update_card = (req, res) => {
-  console.log(req.body);
   const updateId = { _id: ObjectId(req.params.id) };
   const {
     title,
@@ -157,6 +180,15 @@ exports.update_card = (req, res) => {
       });
     });
   }
+};
+
+exports.add_to_favorite = (req, res) => {
+  const { _id, favorite } = req.body;
+  const updateId = { _id: ObjectId(_id) };
+
+  Card.updateOne(updateId, { $set: { favorite } }).then((response) => {
+    res.status(200).json({ response });
+  });
 };
 
 exports.find_by_id = (req, res) => {

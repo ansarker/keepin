@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import AuthContext from "../../context/AuthContext";
+import { SearchContext } from "../../context/SearchProvider";
 import Loading from "../libs/Loading";
 import NoData from "../libs/NoData";
 import PasswordListing from "./passwords/DataListing";
@@ -8,6 +9,7 @@ import CardListing from "./cards/DataListing";
 
 const Dashboard = () => {
   const { authTokens } = useContext(AuthContext);
+  const { value } = useContext(SearchContext);
   const [passwords, setPasswords] = useState([]);
   const [cards, setCards] = useState([]);
   const [passwordState, setPasswordState] = useState({
@@ -25,6 +27,9 @@ const Dashboard = () => {
     const fetchPasswords = async () => {
       try {
         const response = await axios.get("/passwords/read", {
+          params: {
+            q: value,
+          },
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authTokens.access_token}`,
@@ -61,12 +66,15 @@ const Dashboard = () => {
       setPasswords({});
       setPasswordDeleted(!passwordDeleted);
     };
-  }, [authTokens, setPasswords, passwordDeleted]);
+  }, [authTokens, value, setPasswords, passwordDeleted]);
 
   useEffect(() => {
     const fetchCards = async () => {
       try {
         const response = await axios.get("/cards/read", {
+          params: {
+            q: value,
+          },
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authTokens.access_token}`,
@@ -103,7 +111,7 @@ const Dashboard = () => {
       setCards({});
       setCardDeleted(!cardDeleted);
     };
-  }, [authTokens, setCards, cardDeleted]);
+  }, [authTokens, value, setCards, cardDeleted]);
 
   const removePassword = (data) => {
     axios
@@ -166,6 +174,7 @@ const Dashboard = () => {
       <h1 className="text-lg md:text-2xl font-black text-gray-700 mb-3">
         All Credentials
       </h1>
+      <h1 className="text-gray-700 text-lg font-bold">Passwords</h1>
       <div className="mb-4">
         {passwordState.loading && <Loading message="Fetching passwords..." />}
         {passwordState.message && (
@@ -177,9 +186,13 @@ const Dashboard = () => {
         {passwords.length > 0 ? (
           <PasswordListing data={passwords} remove={removePassword} />
         ) : (
-          <NoData />
+          <NoData
+            heading="Empty List"
+            message="You haven't kept any passwords yet"
+          />
         )}
       </div>
+      <h1 className="text-gray-700 text-lg font-bold">Cards</h1>
       <div className="mb-4">
         {cardState.loading && <Loading message="Fetching cards..." />}
         {cardState.message && (
@@ -191,7 +204,10 @@ const Dashboard = () => {
         {cards.length > 0 ? (
           <CardListing data={cards} remove={removeCard} />
         ) : (
-          <NoData />
+          <NoData
+            heading="Empty List"
+            message="You haven't kept any cards yet"
+          />
         )}
       </div>
     </div>

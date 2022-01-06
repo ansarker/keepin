@@ -3,10 +3,12 @@ const passport = require("passport");
 const User = require("../../models/auth/model.user");
 const genPassword = require("../../lib/passwordStrategy").genPassword;
 const validPassword = require("../../lib/passwordStrategy").validPassword;
-const decrypt = require("../../helpers/helper").decrypt;
+const { decrypt } = require("../../helpers/helper");
+
 const ErrorResponse = require("../../lib/errorResponse");
 const sendEmail = require("../../lib/emailSender");
 const jwt = require("jsonwebtoken");
+const { ObjectId } = require("bson");
 
 exports.sign_pp = passport.authenticate("local", {
   failureRedirect: "/auth/signin-failure",
@@ -150,6 +152,56 @@ exports.user_profile = async (req, res, next) => {
     user,
     msg: "You are now signed in",
   });
+};
+
+exports.edit_profile = async (req, res, next) => {
+  try {
+    const { firstName, lastName, email, _id } = req.body;
+    const user = await User.findOne({ _id });
+    if (user) {
+      const any_user = await User.findOne({ email });
+      if (any_user.email !== user.email) {
+        return next(
+          new ErrorResponse(
+            "This email is associated with another account.",
+            400
+          )
+        );
+      }
+    }
+    const updateId = { _id: ObjectId(_id) };
+    const response = await User.updateOne(updateId, {
+      $set: {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+      },
+    }).exec();
+    res.status(200).json({
+      success: true,
+      response,
+      msg: "Updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.upload_photo = async (req, res, next) => {
+  try {
+    const { photo, _id } = req.body;
+    const updateId = { _id: ObjectId(_id) };
+    const response = await User.findByIdAndUpdate(updateId, {
+      $set: { photo: photo },
+    }).exec();
+    res.status(200).json({
+      success: true,
+      response,
+      msg: "Photo uploaded successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.decrypt = (req, res) => {

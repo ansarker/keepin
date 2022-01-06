@@ -33,6 +33,10 @@ const cardSchema = mongoose.Schema(
     },
     salt: String,
     pin: String,
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

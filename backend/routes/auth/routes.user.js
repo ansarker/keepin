@@ -4,6 +4,8 @@ const {
   signin,
   signup,
   user_profile,
+  edit_profile,
+  upload_photo,
   forgot_password,
   reset_password,
   refresh_token,
@@ -15,6 +17,8 @@ router.post("/signup", signup);
 router.post("/forgot-password", forgot_password);
 router.put("/reset-password/:resetToken", reset_password);
 router.get("/user-profile", protect, user_profile);
+router.put("/edit-profile", protect, edit_profile);
+router.put("/upload-photo", protect, upload_photo);
 router.get("/decrypt", decrypt);
 router.post("/refresh", refresh_token);
 
